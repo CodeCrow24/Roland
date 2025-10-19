@@ -1,0 +1,70 @@
+const Database = require('better-sqlite3');
+const path = require('path');
+
+const dbPath = path.resolve(__dirname, '../../../data/data.db');
+const db = new Database(dbPath);
+db.pragma('foreign_keys = ON')
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS "parteien" (
+	    "id"	TEXT NOT NULL,
+	    "name"	TEXT NOT NULL COLLATE NOCASE,
+	    "sitze"	INTEGER DEFAULT 0,
+	    "vorsitz"	TEXT,
+	    "kuerzel"	TEXT,
+	    "konto"	INTEGER DEFAULT 0,
+	    PRIMARY KEY("id"),
+	    FOREIGN KEY("vorsitz") REFERENCES "abgeordnete"("id")
+)
+`).run();
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS "abgeordnete" (
+	    "id"	TEXT NOT NULL,
+	    "name"	TEXT NOT NULL,
+        "userID" TEXT NOT NULL,
+	    PRIMARY KEY("id")
+)
+`).run();
+
+function getEntry(table, column, value){
+    const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${column} = ?`);
+    return stmt.get(value);
+}
+function getAllEntries(table) {
+    const stmt = db.prepare(`SELECT * FROM ${table}`);
+    return stmt.all();
+}
+function addEntry(table, args) {
+    const columns = Object.keys(args);
+    const values = Object.values(args);
+    const placeholders = columns.map(() => '?').join(', '); //question marks for stmt
+
+    const stmt = db.prepare(
+        `INSERT OR IGNORE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`
+    );
+
+    stmt.run(...values); // run with vals
+}
+function removeEntry(table, identifiers){
+    const columns = Object.keys(identifiers);
+    const values = Object.values(identifiers);
+
+    const conditions = columns.map(col => `${col} = ?`).join(' AND ');
+    const stmt = db.prepare(`DELETE FROM ${table} WHERE ${conditions}`);
+    stmt.run(...values);
+}
+function editEntry(table, args){
+    const column = Object.keys(args)[1];
+    const value = Object.values(args)[1];
+    const idColumn = Object.keys(args)[0];
+    const id = Object.values(args)[0];
+
+    const stmt = db.prepare(`UPDATE ${table} SET ${column} = ? WHERE ${idColumn} = ?`);
+    stmt.run(value, id);
+}
+module.exports = {
+    addEntry,
+    editEntry,
+    removeEntry,
+    getEntry,
+    getAllEntries
+};

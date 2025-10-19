@@ -1,0 +1,4 @@
+{
+    "watch": ["."],
+    "ignore": ["logs/*", "node_modules/*", ".gitignore"]
+}
