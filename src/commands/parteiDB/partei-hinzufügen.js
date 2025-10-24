@@ -1,5 +1,6 @@
 const { ApplicationCommandOptionType } = require('discord.js');
 const parteienDB = require('../../utils/dbUtils/parteienDB.js');
+const usersDB = require('../../utils/dbUtils/usersDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog.js');
 require('dotenv').config();
@@ -28,16 +29,21 @@ module.exports = {
             interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
             return;
         }
-        if(parteiName === '[FEHLER]' || parteiVorsitz === '[FEHLER]'){
+        if(parteiName === '[FEHLER]' || promptVorsitz === '[FEHLER]'){
             interaction.reply({content: 'Name oder Vorsitz ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', ephemeral: true});
             writeToLog({
                 position: 'partei-hinzufügen.js',
                 error: 'Name oder Vorsitz not found.'
             }, true)
-            console.log(`[parteiHinzufügenError] Name: ${parteiName}; Vorsitz: ${parteiVorsitz};`)
+            console.log(`[parteiHinzufügenError] Name: ${parteiName}; Vorsitz: ${promptVorsitz};`)
             return;
         }
-        const parteiVorsitz = usersDB.getUser({'name': promptVorsitz}).id;
+        const vorsitzUser = usersDB.getUser({'name': promptVorsitz});
+        if (!vorsitzUser){
+            interaction.reply({content: 'Vorsitzender Nutzer nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            return;
+        }
+        const parteiVorsitz = vorsitzUser.id;
 
         parteienDB.addParty(parteiName, parteiVorsitz, parteiKonto, parteiSitze);
 

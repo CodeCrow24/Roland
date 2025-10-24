@@ -25,11 +25,11 @@ module.exports = {
         const valueTemp = interaction.options.get('wert-neu')?.value || '[FEHLER]';
         const vorsitzID = usersDB.getUser({'id': parteienDB.getParty({'name': parteiName}).vorsitz}).userID;
 
-        if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID) || interaction.member.id !== vorsitzID){
+        if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID) && interaction.member.id !== vorsitzID){
             interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
             return;
         }
-        if (parteiName === '[Fehler]' ||  column === '[Fehler]' || value === '[Fehler]'){
+        if (parteiName === '[Fehler]' ||  column === '[Fehler]' || valueTemp === '[Fehler]'){
             interaction.reply({content: 'Name, Wert oder neuer Wert ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', ephemeral: true});
             writeToLog({
                 position: 'partei-anpassen.js',
@@ -47,6 +47,10 @@ module.exports = {
         }
 
         const parteiID = parteienDB.getPartyID(parteiName);
+        if (!parteiID) {
+            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            return;
+        }
         parteienDB.changePartyValue(parteiID, column, value);
 
         console.log(`Wert: ${column} von Partei: ${parteiName} verändert zu '${value}'.`);

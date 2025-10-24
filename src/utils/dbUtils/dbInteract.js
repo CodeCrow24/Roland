@@ -17,17 +17,42 @@ db.prepare(`
 )
 `).run();
 db.prepare(`
-    CREATE TABLE IF NOT EXISTS "abgeordnete" (
+    CREATE TABLE IF NOT EXISTS "users" (
 	    "id"	TEXT NOT NULL,
 	    "name"	TEXT NOT NULL,
         "userID" TEXT NOT NULL,
 	    PRIMARY KEY("id")
 )
 `).run();
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS "antraege" (
+	    "id"	INTEGER,
+	    "content"	TEXT,
+	    "parlament"	TEXT DEFAULT 'buergerschaft',
+	    "user"	TEXT,
+        "accepted"	INTEGER DEFAULT 0,
+	    PRIMARY KEY("id" AUTOINCREMENT),
+	    FOREIGN KEY("user") REFERENCES "users"("id")
+)
+`).run();
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS "pendingPolls" (
+	    "msgID"	TEXT,
+	    "channelID"	TEXT,
+	    "parlament"	TEXT,
+	    "user"	TEXT,
+	    "antragID"	INTEGER,
+	PRIMARY KEY("msgID")
+)
+`).run();
 
 function getEntry(table, column, value){
     const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${column} = ?`);
     return stmt.get(value);
+}
+function getAllSpez(table, column, value){
+    const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${column} = ?`);
+    return stmt.all(value);
 }
 function getAllEntries(table) {
     const stmt = db.prepare(`SELECT * FROM ${table}`);
@@ -42,7 +67,9 @@ function addEntry(table, args) {
         `INSERT OR IGNORE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`
     );
 
-    stmt.run(...values); // run with vals
+    const result = stmt.run(...values);
+
+    return result.lastInsertRowid;
 }
 function removeEntry(table, identifiers){
     const columns = Object.keys(identifiers);
@@ -66,5 +93,6 @@ module.exports = {
     editEntry,
     removeEntry,
     getEntry,
-    getAllEntries
+    getAllEntries,
+    getAllSpez
 };

@@ -32,6 +32,10 @@ module.exports = {
         }
 
         const parteiID = parteienDB.getPartyID(parteiName);
+        if (!parteiID) {
+            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            return;
+        }
         parteienDB.deleteParty(parteiID);
 
         console.log(`Partei gelöscht: ${parteiName}`);

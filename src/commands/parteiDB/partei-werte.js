@@ -41,6 +41,10 @@ module.exports = {
 
 
         const parteiID = parteienDB.getPartyID(parteiName);
+        if (!parteiID) {
+            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            return;
+        }
         console.log(`ID ${parteiID}, Wert: ${column}, neuwert: ${value}`);
         parteienDB.changePartyValue(parteiID, column, value);
 

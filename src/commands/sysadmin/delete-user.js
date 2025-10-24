@@ -32,6 +32,10 @@ module.exports = {
         }
 
         const userID = usersDB.getUserID(userName);
+        if (!userID) {
+            interaction.reply({content: 'Nutzer nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            return;
+        }
         usersDB.deleteUser(userID);
 
         console.log(`User gelöscht: ${userName}`);
