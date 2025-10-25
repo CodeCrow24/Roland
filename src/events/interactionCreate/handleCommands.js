@@ -4,7 +4,7 @@ const writeToLog = require('../../utils/writeToLog');
 
 module.exports = async (client, interaction) => {
     if (!interaction.isChatInputCommand()) return;
-    if (interaction.channel.name !== "bot-cmd"){return;}
+    if (interaction.channel.name !== "bot-cmd" && interaction.channel.name !== "parlaments-bot-cmd"){return;}
     const localCommands = getLocalCommands();
 
     try {

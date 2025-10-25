@@ -1,5 +1,5 @@
 module.exports = (client, msg) => {
-    if(msg.author.bot  || msg.channel.name != "bot-cmd") return;
+    if(msg.author.bot  || msg.channel.name != "marktplatz") return;
     
     const date = msg.createdAt;
     let hasSent = false

@@ -25,7 +25,7 @@ module.exports = {
         const value = interaction.options.get('wert-neu')?.value || '[FEHLER]';
 
         
-        if (!interaction.member.roles.cache.has(process.env.WAHLROLE_ID)){
+        if (!interaction.member.roles.cache.has(process.env.WAHLROLE_ID) && !interaction.member.roles.cache.has(process.env.SYSADMIN_ID)){
             interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
             return;
         }

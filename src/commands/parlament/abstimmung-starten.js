@@ -23,6 +23,12 @@ module.exports = {
             ],
             required: true,
         },
+        {
+            name: 'verfassungsänderung',
+            description: 'Ob der Antrag eine Verfassungsänderung ist.',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+        },
     ],
 
     callback: async (client, interaction) => {
@@ -35,6 +41,7 @@ module.exports = {
 
         const guild = interaction.guild;
         const parla = interaction.options.get('parlament')?.value;
+        const isVerfassung = interaction.options.get('gesetz')?.value;
         if (!parla){interaction.editReply({content:'Ein Fehler ist bei dem Aufruf zur Abstimmung aufgetreten.'});}
 
         const pendingPoll = db.getEntry('pendingPolls', 'parlament', parla);
@@ -45,17 +52,16 @@ module.exports = {
 
         const antragID = pendingPoll.antragID;
         
-        await msg.react('☑️');
         await msg.react('👍');
         await msg.react('👎');
         await msg.react('😐');
 
         const msgLink = `https://discord.com/channels/${channel.guild.id}/${channel.id}/${msg.id}`;
-        interaction.editReply({content:`Abstimmung zu ${msgLink} gestartet. Bitte stimmen Sie innerhalb 1 Minute ab. ||@Abgeordneter||`});
+        interaction.editReply({content:`Abstimmung zu ${msgLink} gestartet. Bitte stimmen Sie innerhalb 1 Minute ab. @here`});
 
         const filter = (reaction, user) => !user.bot;
 
-        const collected = await msg.awaitReactions({ filter, time: 10000 });
+        const collected = await msg.awaitReactions({ filter, time: 60000 });
 
 
         const thumbsUpReaction = collected.get("👍");
@@ -82,8 +88,9 @@ module.exports = {
         let votesUp = 0;
         for (const user of thumbsUpUsers) {votesUp += parteienDB.getParty({'vorsitz': usersDB.getUser({'userID': user.id}).id}).sitze;}
 
+        const prozent = (isVerfassung) ? 66 : 50;
 
-        if (votesUp > (totalVotes / 2)) {
+        if (((votesUp / totalVotes) * 100) > prozent) {
             msg.react('✅');
             db.editEntry('antraege', {'id': antragID, 'accepted': 1});
         } else {
@@ -94,14 +101,16 @@ module.exports = {
 
         //PROTOKOLL
 
-        const filePath = path.join(__dirname, '..', '..', '..', 'logs', 'protokoll.txt');
+        const filePath = path.join(__dirname, '..', '..', '..', 'logs', `${parla}-protokoll.txt`);
 
         const antrag = db.getEntry('antraege', 'id', antragID);
 
         const acceptedTXT = (antrag.accepted === 1) ? 'Angenommen' : 'Abgelehnt';
         const userName = usersDB.getUser({'id': antrag.user}).name;
+        const entries = db.getAllSpez('antraege', 'parlament', [parla]);
+        const pollMenge = Array.isArray(entries) ? entries.length : 0;
 
-        const text = `ANTRAG ${antrag.id} von ${userName}: ${antrag.content} => ${acceptedTXT}\n\n`;
+        const text = `ANTRAG ${pollMenge} von ${userName}: ${antrag.content} => ${acceptedTXT}\n\n`;
 
         fs.appendFileSync(filePath, text, 'utf8');
 
