@@ -82,7 +82,7 @@ module.exports = {
 
         let totalVotes = 0;
         for (const user of allUsers) {
-            totalVotes += parteienDB.getParty({'vorsitz': usersDB.getUser({'userID': user.id}).id}).sitze;
+            totalVotes += parteienDB.getParty({'vorsitz': usersDB.getUser({'userID': user.id}).id}).sitze || 0;
         }
 
         let votesUp = 0;

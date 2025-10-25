@@ -17,6 +17,15 @@ db.prepare(`
 )
 `).run();
 db.prepare(`
+CREATE TABLE IF NOT EXISTS "ordnungsrufe" (
+	"id"	INTEGER,
+	"userID"	TEXT,
+	"strafe"	INTEGER,
+	"grund"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+`).run();
+db.prepare(`
     CREATE TABLE IF NOT EXISTS "users" (
 	    "id"	TEXT NOT NULL,
 	    "name"	TEXT NOT NULL,

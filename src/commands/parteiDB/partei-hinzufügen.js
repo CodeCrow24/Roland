@@ -16,7 +16,7 @@ function findeKuerzel(name){
 async function createRole(client, interaction, name){
     try {
         // Get the color option from the interaction
-        let colorInput = interaction.options.get('farbe')?.value;
+        let colorInput = interaction.options.get('farbe')?.value || '#d5d5d5';
 
         // Create the role
         const newRole = await interaction.guild.roles.create({
