@@ -29,7 +29,7 @@ module.exports = {
             const parteien = parteienDB.getAllParties();
             for (const parteiObject of parteien){parteiFields.push({
                 name: `${parteiObject.name} [${parteiObject.kuerzel}]`,
-                value:`${usersDB.getUser({'id': parteiObject.vorsitz}).name}`})}
+                value:`${usersDB.getUser({'partei': parteiObject.id, 'vorsitz': 1}).name}`})}
             const parteienEmbed = new EmbedBuilder()
                 .setTitle("Bremer Parteien")
                 .setThumbnail('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGf-X8RpKfCZQbU1rLqjc2vRe_dih2oTHxXQ&s')
@@ -58,7 +58,7 @@ module.exports = {
             .setThumbnail(`attachment://${parteiKuerzel}_Logo.png`)
             .setColor(0x96324c)
             .addFields(
-                {name: 'Parteivorsitz: ', value: usersDB.getUser({'id': partei.vorsitz}).name || 'Keine Daten', inline: true,},
+                {name: 'Parteivorsitz: ', value: usersDB.getUser({'partei': partei.id, 'vorsitz': 1}).name || 'Keine Daten', inline: true,},
                 {name: 'Sitze: ', value: String(partei.sitze) || 'Keine Daten', inline: true,},
             )
             .setFooter({ text:'Quelle: Roland Datenbank', });

@@ -25,8 +25,9 @@ module.exports = {
         const grund = interaction.options.get('grund')?.value || 'Der Grund wurde nicht angegeben.';
         const strafe = interaction.options.get('strafe')?.value || 0;
         const channel = interaction.guild.channels.cache.get(process.env.ORDNUNG_ID);
-        const userID = usersDB.getUser({'userID': mentionableUser.id}).id;
-        const partei = parteienDB.getParty({'vorsitz': userID});
+        const user = usersDB.getUser({'userID': mentionableUser.id});
+        const userID = user.id;
+        const partei = parteienDB.getParty({'id': user.partei,});
         //const member = await interaction.guild.members.fetch(mentionableUser.id);
 
         if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID) || interaction.channel.name !== 'parlaments-bot-cmd'){

@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, AttachmentBuilder, Guild} = require('discord.js');
+const { ApplicationCommandOptionType, AttachmentBuilder, Guild, MessageFlags} = require('discord.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog');
 require('dotenv').config();
 
@@ -26,7 +26,7 @@ module.exports = {
         }
 
 
-        interaction.reply({content:'Anonym gesendet.', ephemeral:true})
+        interaction.reply({content:'Anonym gesendet.', flags: MessageFlags.Ephemeral})
         writeCmdToLog(interaction);
     },
 };

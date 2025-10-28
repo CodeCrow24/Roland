@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
 const logCommand = require('../../utils/writeCmdToLog');
 
 module.exports = {
@@ -16,6 +16,6 @@ module.exports = {
     callback: (client, interaction) => {
         logCommand(interaction, interaction.options);
         console.log(`logged request via command "${interaction.commandName}"...`);
-        interaction.reply({content: 'Ihre Anfrage wurde weitergeleitet.', ephemeral: true,});
+        interaction.reply({content: 'Ihre Anfrage wurde weitergeleitet.', flags: MessageFlags.Ephemeral,});
     },
 };

@@ -35,7 +35,7 @@ function findeKuerzel(name){
 // <|| EXPORT FUNCTIONS ||>
 
 
-function addUser(name, userID){
+function addUser(name, userID, partei){
     // || Kuerzelfindung ||
     const kuerzel = findeKuerzel(name);
 
@@ -43,7 +43,7 @@ function addUser(name, userID){
     id = kuerzel.toLowerCase() + (getUserAmounts() + 1);
 
     //Insert into DB
-    db.addEntry('users', {id, name, userID});
+    db.addEntry('users', {id, name, userID, partei});
 }
 function deleteUser(id) {
     db.removeEntry('users', {id});

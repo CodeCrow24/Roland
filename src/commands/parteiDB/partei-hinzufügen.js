@@ -3,7 +3,9 @@ const parteienDB = require('../../utils/dbUtils/parteienDB.js');
 const usersDB = require('../../utils/dbUtils/usersDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog.js');
+const updatePartyChat = require('../../utils/dbUtils/updatePartyChat.js');
 require('dotenv').config();
+
 function findeKuerzel(name){
     const woerter = name.split(/[ -]/);
     let kuerzel = '';
@@ -146,5 +148,6 @@ module.exports = {
         console.log(`Partei hinzugefügt: ${parteiName}`);
         interaction.reply(`Partei hinzugefügt: ${parteiName}`);
         writeCmdToLog(interaction);
+        updatePartyChat();
     }
 };
