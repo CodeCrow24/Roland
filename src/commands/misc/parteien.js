@@ -1,4 +1,4 @@
-const { EmbedBuilder,  AttachmentBuilder, ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder,  AttachmentBuilder, ApplicationCommandOptionType, MessageFlags} = require('discord.js');
 const parteienDB = require('../../utils/dbUtils/parteienDB.js');
 const usersDB = require('../../utils/dbUtils/usersDB.js');
 const path = require('path');
@@ -17,6 +17,11 @@ module.exports = {
 
     callback: (client, interaction) => {
         const parteiKuerzel = interaction.options.get('parteikuerzel')?.value || '404';
+
+        if (interaction.channel.name !== 'bot-cmd') {
+            interaction.reply({content:'Dieser Command kann hier nicht genutzt werden', flags: MessageFlags.Ephemeral});
+            return;
+        }
 
 
         if (parteiKuerzel === '404') {
@@ -38,7 +43,7 @@ module.exports = {
 
         
         const partei = parteienDB.getParty({'kuerzel': parteiKuerzel});
-        if (!partei) return interaction.reply({ content: 'Partei nicht gefunden', ephemeral: true });
+        if (!partei) return interaction.reply({ content: 'Partei nicht gefunden', flags: MessageFlags.Ephemeral });
 
         const logoPath = path.join(__dirname, `../../../assets/${parteiKuerzel}_Logo.png`);
         let logo;

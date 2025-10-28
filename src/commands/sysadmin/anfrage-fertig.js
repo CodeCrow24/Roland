@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags} = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -28,7 +28,7 @@ module.exports = {
         const entry = data.find(item => item.options.name === searchName);
 
         if (!entry) {    
-            interaction.reply({content:'Eintrag nicht gefunden', ephemeral:true});
+            interaction.reply({content:'Eintrag nicht gefunden', flags: MessageFlags.Ephemeral});
         }
         
         user.send(`Anfrage fertiggestellt: '${entry.options.name}'.`);
@@ -38,6 +38,6 @@ module.exports = {
         fs.writeFileSync(logFile, JSON.stringify(newData, null, 2));
 
 
-        interaction.reply({content:'Eintrag gefunden und entfernt', ephemeral:true});
+        interaction.reply({content:'Eintrag gefunden und entfernt', flags: MessageFlags.Ephemeral});
     },
 };

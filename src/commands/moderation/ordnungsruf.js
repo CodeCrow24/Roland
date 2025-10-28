@@ -1,8 +1,9 @@
-const { ApplicationCommandOptionType, AttachmentBuilder, Guild} = require('discord.js');
+const { ApplicationCommandOptionType, AttachmentBuilder, Guild, MessageFlags} = require('discord.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog');
 const db = require('../../utils/dbUtils/dbInteract');
 const usersDB = require('../../utils/dbUtils/usersDB');
 const parteienDB = require('../../utils/dbUtils/parteienDB');
+const partyChat = require('../../utils/dbUtils/updatePartyChat');
 require('dotenv').config();
 
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
     ],
 
     callback: async (client, interaction) => {
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         const mentionableUser = interaction.options.getUser('person');
         if (!mentionableUser) return interaction.editReply({content:'Person muss angegeben werden.'});
         const grund = interaction.options.get('grund')?.value || 'Der Grund wurde nicht angegeben.';
@@ -28,8 +29,8 @@ module.exports = {
         const partei = parteienDB.getParty({'vorsitz': userID});
         //const member = await interaction.guild.members.fetch(mentionableUser.id);
 
-        if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID)){
-            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+        if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID) || interaction.channel.name !== 'parlaments-bot-cmd'){
+            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen oder sind im falschen Chat', flags: MessageFlags.Ephemeral});
             return;
         }
 
@@ -42,6 +43,6 @@ module.exports = {
         channel.send(`**Ordnungsruf ${ordnungsrufIndex})** [ <@${mentionableUser.id}> ]\n  Grund: ${grund}\n  Strafe: ${strafe}€`);
 
         interaction.editReply({content:'Ordnungsruf vergeben.'});
-
+        partyChat(client, interaction.guild);
     },
 };

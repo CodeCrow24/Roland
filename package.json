@@ -1,6 +1,6 @@
 {
   "name": "roland-entwicklung",
-  "version": "0.5.9",
+  "version": "0.6.0b",
   "description": "parlamentssoftware bremen",
   "main": "src/index.js",
   "scripts": {

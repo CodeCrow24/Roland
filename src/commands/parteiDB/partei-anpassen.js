@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags} = require('discord.js');
 const parteienDB = require('../../utils/dbUtils/parteienDB.js');
 const usersDB = require('../../utils/dbUtils/usersDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
@@ -26,11 +26,11 @@ module.exports = {
         const vorsitzID = usersDB.getUser({'id': parteienDB.getParty({'name': parteiName}).vorsitz}).userID;
 
         if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID) && interaction.member.id !== vorsitzID){
-            interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+            interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
         if (parteiName === '[Fehler]' ||  column === '[Fehler]' || valueTemp === '[Fehler]'){
-            interaction.reply({content: 'Name, Wert oder neuer Wert ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', ephemeral: true});
+            interaction.reply({content: 'Name, Wert oder neuer Wert ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', flags: MessageFlags.Ephemeral});
             writeToLog({
                 position: 'partei-anpassen.js',
                 error: 'name, column or value not found.'
@@ -48,13 +48,13 @@ module.exports = {
 
         const parteiID = parteienDB.getPartyID(parteiName);
         if (!parteiID) {
-            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', flags: MessageFlags.Ephemeral});
             return;
         }
         parteienDB.changePartyValue(parteiID, column, value);
 
         console.log(`Wert: ${column} von Partei: ${parteiName} verändert zu '${value}'.`);
-        interaction.reply({content: `Wert: ${column} von Partei: ${parteiName} verändert zu '${value}'.`, ephemeral: true});
+        interaction.reply({content: `Wert: ${column} von Partei: ${parteiName} verändert zu '${value}'.`, flags: MessageFlags.Ephemeral});
         writeCmdToLog(interaction);
     },
 };

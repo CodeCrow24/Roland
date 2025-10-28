@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
 const parteienDB = require('../../utils/dbUtils/parteienDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog.js');
@@ -66,11 +66,11 @@ module.exports = {
         const parteiName = interaction.options.get('name')?.value || '[FEHLER]';
         
         if (!interaction.member.roles.cache.has(process.env.MASTER_ID) && !interaction.member.roles.cache.has(process.env.SYSADMIN_ID)){
-            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
         if(parteiName === '[FEHLER]'){
-            interaction.reply({content:'Name ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', ephemeral: true});
+            interaction.reply({content:'Name ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', flags: MessageFlags.Ephemeral});
             writeToLog({
                 position: 'partei-löschen.js',
                 error: 'Name not found.'
@@ -83,7 +83,7 @@ module.exports = {
 
         const parteiID = parteienDB.getPartyID(parteiName);
         if (!parteiID) {
-            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            interaction.reply({content: 'Partei nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', flags: MessageFlags.Ephemeral});
             return;
         }
         parteienDB.deleteParty(parteiID);

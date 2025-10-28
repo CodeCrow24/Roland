@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
 const db = require('../../utils/dbUtils/dbInteract');
 const usersDB = require('../../utils/dbUtils/usersDB');
 const parteienDB = require('../../utils/dbUtils/parteienDB');
@@ -38,8 +38,8 @@ module.exports = {
 
         await interaction.deferReply();
 
-        if (parla === 'err' || content === 'err'){
-            interaction.editReply({content: 'Ein Fehler ist aufgetreten.'});
+        if (parla === 'err' || content === 'err' || interaction.channel.name != 'parlaments-bot-cmd'){
+            interaction.editReply({content: 'Ein Fehler ist aufgetreten.', flags: MessageFlags.Ephemeral});
             console.log('Ein Fehler ist beim Erstellen eines Antrags aufgetreten.');
         }
 

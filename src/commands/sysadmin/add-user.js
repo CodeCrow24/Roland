@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags} = require('discord.js');
 const usersDB = require('../../utils/dbUtils/usersDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
 const writeCmdToLog = require('../../utils/writeCmdToLog.js');
@@ -21,11 +21,11 @@ module.exports = {
 
         
         if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID)){
-            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
         if(userName === '[FEHLER]' || userID === '[FEHLER]'){
-            interaction.reply({content:'Name oder UserID ist nicht korrekt aufgenommen worden.', ephemeral: true});
+            interaction.reply({content:'Name oder UserID ist nicht korrekt aufgenommen worden.', flags: MessageFlags.Ephemeral});
             writeToLog({
                 position: 'add-user.js',
                 error: 'Name oder UserID not found.'
@@ -37,7 +37,7 @@ module.exports = {
         usersDB.addUser(userName, userID);
 
         console.log(`User hinzugefügt: ${userName}`);
-        interaction.reply({content:`User hinzugefügt: ${userName}`});
+        interaction.reply({content:`User hinzugefügt: ${userName}`, flags: MessageFlags.Ephemeral});
         writeCmdToLog(interaction);
     }
 };

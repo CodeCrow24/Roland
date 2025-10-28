@@ -1,4 +1,4 @@
-const { Client, ApplicationCommandOptionType, ChannelType, PermissionFlagsBits, Colors} = require('discord.js');
+const { Client, ApplicationCommandOptionType, ChannelType, PermissionFlagsBits, Colors, MessageFlags} = require('discord.js');
 const parteienDB = require('../../utils/dbUtils/parteienDB.js');
 const usersDB = require('../../utils/dbUtils/usersDB.js');
 const writeToLog = require('../../utils/writeToLog.js');
@@ -122,11 +122,11 @@ module.exports = {
         await member.roles.add(role);
         
         if (!interaction.member.roles.cache.has(process.env.MASTER_ID) && !interaction.member.roles.cache.has(process.env.SYSADMIN_ID)){
-            interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+            interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
         if(parteiName === '[FEHLER]' || promptVorsitz === '[FEHLER]'){
-            interaction.reply({content: 'Name oder Vorsitz ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', ephemeral: true});
+            interaction.reply({content: 'Name oder Vorsitz ist nicht korrekt aufgenommen worden. Bitte versuchen sie es später nochmal oder wenden sie sich an ihren Systemadministrator.', flags: MessageFlags.Ephemeral});
             writeToLog({
                 position: 'partei-hinzufügen.js',
                 error: 'Name oder Vorsitz not found.'
@@ -136,7 +136,7 @@ module.exports = {
         }
         
         if (!vorsitzUser){
-            interaction.reply({content: 'Vorsitzender Nutzer nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', ephemeral: true});
+            interaction.reply({content: 'Vorsitzender Nutzer nicht gefunden. Überprüfen sie Ihre Rechtschreibung oder versuchen Sie es später erneut.', flags: MessageFlags.Ephemeral});
             return;
         }
         const parteiVorsitz = vorsitzUser.id;

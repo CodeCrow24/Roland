@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags} = require('discord.js');
 const db = require('../../utils/dbUtils/dbInteract');
 const usersDB = require('../../utils/dbUtils/usersDB');
 const parteienDB = require('../../utils/dbUtils/parteienDB');
@@ -35,7 +35,7 @@ module.exports = {
         await interaction.deferReply();
 
         if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID)){
-            interaction.editReply({content:'Sie haben nicht die benötigten Berechtigungen', ephemeral: true});
+            interaction.editReply({content:'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
 
