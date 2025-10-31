@@ -143,7 +143,12 @@ module.exports = {
         }
         const parteiVorsitz = vorsitzUser.id;
 
-        parteienDB.addParty(parteiName, parteiVorsitz, parteiKonto, parteiSitze);
+        const parteiID = parteienDB.addParty(parteiName, parteiKonto, parteiSitze);
+
+        const partei = parteienDB.getParty({'id': parteiID});
+
+        usersDB.editUser(parteiVorsitz, 'partei', partei);
+        usersDB.editUser(parteiVorsitz, 'vorsitz', 1);
 
         console.log(`Partei hinzugefügt: ${parteiName}`);
         interaction.reply(`Partei hinzugefügt: ${parteiName}`);

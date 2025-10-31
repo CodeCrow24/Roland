@@ -23,9 +23,8 @@ module.exports = {
         const parteiName = interaction.options.get('name')?.value || '[FEHLER]';
         const column = interaction.options.get('wert')?.value || '[FEHLER]';
         const valueTemp = interaction.options.get('wert-neu')?.value || '[FEHLER]';
-        const vorsitzID = usersDB.getUser({'id': parteienDB.getParty({'name': parteiName}).vorsitz}).userID;
 
-        if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID) && interaction.member.id !== vorsitzID){
+        if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID) && usersDB.getUser({'userID': interaction.user.id}).vorsitz !== 1){
             interaction.reply({content: 'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }

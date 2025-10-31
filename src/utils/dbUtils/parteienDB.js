@@ -32,7 +32,7 @@ function findeKuerzel(name){
     return kuerzel;
 }
 
-function addParty(name, vorsitz, konto, sitze){
+function addParty(name, konto, sitze){
     // || Kuerzelfindung ||
     const kuerzel = findeKuerzel(name);
 
@@ -40,7 +40,7 @@ function addParty(name, vorsitz, konto, sitze){
     id = kuerzel.toLowerCase() + (getPartyAmounts() + 1);
 
     //Insert into DB
-    db.addEntry('parteien', {id, name, sitze, vorsitz, kuerzel, konto});
+    return db.addEntry('parteien', {id, name, sitze, kuerzel, konto}).id;
 }
 function deleteParty(id) {
     db.removeEntry('parteien', {id});

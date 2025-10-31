@@ -63,7 +63,7 @@ module.exports = {
         const msg = await channel.send(`**Antrag ${pollMenge} von ${interaction.member.displayName}:** ${content}`);
         interaction.editReply({content:'Antrag gesended. Warte auf den Aufruf zur Abstimmung...'});
 
-        db.addEntry('pendingPolls', {
+        await db.addEntry('pendingPolls', {
             msgId: msg.id,
             channelId: channel.id,
             parlament: parla,

@@ -6,14 +6,13 @@ const db = new Database(dbPath);
 db.pragma('foreign_keys = ON')
 db.prepare(`
     CREATE TABLE IF NOT EXISTS "parteien" (
-	    "id"	TEXT NOT NULL,
-	    "name"	TEXT NOT NULL COLLATE NOCASE,
-	    "sitze"	INTEGER DEFAULT 0,
-	    "vorsitz"	TEXT,
-	    "kuerzel"	TEXT,
-	    "konto"	INTEGER DEFAULT 0,
-	    PRIMARY KEY("id"),
-	    FOREIGN KEY("vorsitz") REFERENCES "abgeordnete"("id")
+	"id"	TEXT NOT NULL,
+	"name"	TEXT NOT NULL COLLATE NOCASE,
+	"sitze"	INTEGER DEFAULT 0,
+	"kuerzel"	TEXT,
+	"konto"	INTEGER DEFAULT 0,
+	"sitzeH"	INTEGER DEFAULT 0,
+	PRIMARY KEY("id")
 )
 `).run();
 db.prepare(`
@@ -27,10 +26,14 @@ CREATE TABLE IF NOT EXISTS "ordnungsrufe" (
 `).run();
 db.prepare(`
     CREATE TABLE IF NOT EXISTS "users" (
-	    "id"	TEXT NOT NULL,
-	    "name"	TEXT NOT NULL,
-        "userID" TEXT NOT NULL,
-	    PRIMARY KEY("id")
+	"id"	TEXT NOT NULL,
+	"name"	TEXT NOT NULL,
+	"userID"	TEXT NOT NULL,
+	"partei"	TEXT,
+	"vorsitz"	INTEGER DEFAULT 0,
+	"vertretung"	TEXT,
+	PRIMARY KEY("id"),
+	FOREIGN KEY("partei") REFERENCES "parteien"("id")
 )
 `).run();
 db.prepare(`
@@ -62,6 +65,22 @@ function getEntry(table, column, value){
 function getAllSpez(table, column, value){
     const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${column} = ?`);
     return stmt.all(value);
+}
+function getCon(table, identifiers){
+    const columns = Object.keys(identifiers);
+    const values = Object.values(identifiers);
+
+    const conditions = columns.map(col => `${col} = ?`).join(' AND ');
+    const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${conditions}`);
+    return stmt.get(...values);
+}
+function getAllCon(table, identifiers){
+    const columns = Object.keys(identifiers);
+    const values = Object.values(identifiers);
+
+    const conditions = columns.map(col => `${col} = ?`).join(' AND ');
+    const stmt = db.prepare(`SELECT * FROM ${table} WHERE ${conditions}`);
+    return stmt.all(...values);
 }
 function getAllEntries(table) {
     const stmt = db.prepare(`SELECT * FROM ${table}`);
@@ -103,5 +122,7 @@ module.exports = {
     removeEntry,
     getEntry,
     getAllEntries,
-    getAllSpez
+    getAllSpez,
+    getCon,
+    getAllCon
 };
