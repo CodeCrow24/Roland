@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
+const { ApplicationCommandOptionType, MessageFlags, AttachmentBuilder } = require('discord.js');
 const db = require('../../utils/dbUtils/dbInteract');
 const usersDB = require('../../utils/dbUtils/usersDB');
 const parteienDB = require('../../utils/dbUtils/parteienDB');
@@ -16,6 +16,12 @@ module.exports = {
             description: 'Der Antrag selbst',
             type: ApplicationCommandOptionType.String,
             required: true,
+        },
+        {
+            name:'anhang', 
+            description:'Der Anhang der Nachricht (falls notwendig)', 
+            type: ApplicationCommandOptionType.Attachment, 
+            required: false
         }
     ],
 
@@ -24,6 +30,7 @@ module.exports = {
         const guild = interaction.guild;
         const userID = interaction.member.id;
         const user = usersDB.getUser({userID}).id;
+        const anhang = interaction.options.getAttachment('anhang');
 
         await interaction.deferReply();
 
@@ -40,8 +47,16 @@ module.exports = {
         const pollMenge = Array.isArray(entries) ? entries.length : 0;
 
 
-        const msg = await channel.send(`**Antrag ${pollMenge} von ${interaction.member.displayName}:** ${content}`);
+        const msgContent = `**Antrag ${pollMenge} von ${interaction.member.displayName}:** ${content}`;
         interaction.editReply({content:'Antrag gesended. Warte auf den Aufruf zur Abstimmung...'});
+
+        let msg;
+        if (!anhang){
+            msg = await channel.send(msgContent);
+        }else{
+            const file = new AttachmentBuilder(anhang.url);
+            msg = await channel.send({content:msgContent, files: [file]})
+        }
 
         const pendingPolls = db.getAllEntries('pendingPolls');
         let highestPending = 0;
