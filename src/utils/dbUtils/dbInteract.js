@@ -11,17 +11,17 @@ db.prepare(`
 	"sitze"	INTEGER DEFAULT 0,
 	"kuerzel"	TEXT,
 	"konto"	INTEGER DEFAULT 0,
-	"sitzeH"	INTEGER DEFAULT 0,
 	PRIMARY KEY("id")
 )
 `).run();
 db.prepare(`
-CREATE TABLE IF NOT EXISTS "ordnungsrufe" (
+    CREATE TABLE IF NOT EXISTS "ordnungsrufe" (
 	"id"	INTEGER,
 	"userID"	TEXT,
 	"strafe"	INTEGER,
 	"grund"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT)
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("userID") REFERENCES "users"("id")
 )
 `).run();
 db.prepare(`
@@ -33,28 +33,27 @@ db.prepare(`
 	"vorsitz"	INTEGER DEFAULT 0,
 	"vertretung"	TEXT,
 	PRIMARY KEY("id"),
-	FOREIGN KEY("partei") REFERENCES "parteien"("id")
+	FOREIGN KEY("partei") REFERENCES "parteien"("id"),
+	FOREIGN KEY("vertretung") REFERENCES "parteien"("id")
 )
 `).run();
 db.prepare(`
     CREATE TABLE IF NOT EXISTS "antraege" (
-	    "id"	INTEGER,
-	    "content"	TEXT,
-	    "parlament"	TEXT DEFAULT 'buergerschaft',
-	    "user"	TEXT,
-        "accepted"	INTEGER DEFAULT 0,
-	    PRIMARY KEY("id" AUTOINCREMENT),
-	    FOREIGN KEY("user") REFERENCES "users"("id")
+	"id"	INTEGER,
+	"content"	TEXT,
+	"user"	TEXT,
+	"accepted"	INTEGER DEFAULT 0,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("user") REFERENCES "users"("id")
 )
 `).run();
 db.prepare(`
     CREATE TABLE IF NOT EXISTS "pendingPolls" (
-	    "msgID"	TEXT,
-	    "channelID"	TEXT,
-	    "parlament"	TEXT,
-	    "user"	TEXT,
-	    "antragID"	INTEGER,
-	PRIMARY KEY("msgID")
+	"msgID"	TEXT,
+	"channelID"	TEXT,
+	"user"	TEXT,
+	"antragID"	INTEGER,
+	"pos"	INTEGER
 )
 `).run();
 

@@ -12,16 +12,6 @@ module.exports = {
     // deleted: Boolean,
     options: [
         {
-            name: 'parlament',
-            description: 'Das Parlament in welches der Antrag gestellt werden soll.',
-            type: ApplicationCommandOptionType.String,
-            choices: [
-                {name: 'Bürgerschaft', value: 'buergerschaft'},
-                {name: 'Hanserat', value: 'hanserat'},
-            ],
-            required: true,
-        },
-                {
             name: 'inhalt',
             description: 'Der Antrag selbst',
             type: ApplicationCommandOptionType.String,
@@ -30,7 +20,6 @@ module.exports = {
     ],
 
     callback: async (client, interaction) => {
-        const parla = interaction.options.get('parlament')?.value || 'err';
         const content = interaction.options.get('inhalt')?.value || 'err';
         const guild = interaction.guild;
         const userID = interaction.member.id;
@@ -38,37 +27,36 @@ module.exports = {
 
         await interaction.deferReply();
 
-        if (parla === 'err' || content === 'err' || interaction.channel.name != 'parlaments-bot-cmd'){
+        if (content === 'err' || interaction.channel.name != 'parlaments-bot-cmd'){
             interaction.editReply({content: 'Ein Fehler ist aufgetreten.', flags: MessageFlags.Ephemeral});
             console.log('Ein Fehler ist beim Erstellen eines Antrags aufgetreten.');
         }
 
-        const antragID = db.addEntry('antraege', {content, 'parlament': parla, user});
+        const antragID = db.addEntry('antraege', {content, user});
 
-        let channel;
-        switch (parla) {
-            case 'buergerschaft':
-                channel = guild.channels.cache.get(process.env.POLLSA_ID);
-                break;
-            case 'hanserat':
-                channel = guild.channels.cache.get(process.env.POLLSB_ID);
-                break;
+        let channel = guild.channels.cache.get(process.env.POLLSA_ID);
 
-        }
-
-        const entries = db.getAllSpez('antraege', 'parlament', [parla]);
+        const entries = db.getAllEntries('antraege');
         const pollMenge = Array.isArray(entries) ? entries.length : 0;
 
 
         const msg = await channel.send(`**Antrag ${pollMenge} von ${interaction.member.displayName}:** ${content}`);
         interaction.editReply({content:'Antrag gesended. Warte auf den Aufruf zur Abstimmung...'});
 
+        const pendingPolls = db.getAllEntries('pendingPolls');
+        let highestPending = 0;
+        for (poll of pendingPolls){
+            if (highestPending < poll.pos){highestPending = poll.pos}
+        }
+
+        const thisI = highestPending + 1;
+
         await db.addEntry('pendingPolls', {
             msgId: msg.id,
             channelId: channel.id,
-            parlament: parla,
             user,
-            antragID
+            antragID,
+            pos: thisI,
         });
     },
 };

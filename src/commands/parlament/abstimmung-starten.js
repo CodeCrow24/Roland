@@ -14,16 +14,6 @@ module.exports = {
     // deleted: Boolean,
     options: [
         {
-            name: 'parlament',
-            description: 'Das Parlament in welches der Antrag gestellt werden soll.',
-            type: ApplicationCommandOptionType.String,
-            choices: [
-                {name: 'Bürgerschaft', value: 'buergerschaft'},
-                {name: 'Hanserat', value: 'hanserat'},
-            ],
-            required: true,
-        },
-        {
             name: 'verfassungsänderung',
             description: 'Ob der Antrag eine Verfassungsänderung ist.',
             type: ApplicationCommandOptionType.String,
@@ -35,23 +25,28 @@ module.exports = {
         await interaction.deferReply();
 
         // nur parla-präsi
-        if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID)){
+        if (!interaction.member.roles.cache.has(process.env.PRESIDENT_ID) && !interaction.member.roles.cache.has(process.env.SEMIPRESI_ID)){
             interaction.editReply({content:'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
             return;
         }
 
         // inputs
         const guild = interaction.guild;
-        const parla = interaction.options.get('parlament')?.value;
         const isVerfassung = interaction.options.get('gesetz')?.value;
 
-        // kein Parlament
-        if (!parla){interaction.editReply({
-            content:'Ein Fehler ist bei dem Aufruf zur Abstimmung aufgetreten.'});}
-
         // get pendingPoll aus DB
-        const pendingPoll = db.getEntry('pendingPolls', 'parlament', parla);
-        if (!pendingPoll) return interaction.editReply('Kein ausstehender Antrag gefunden.');
+        const pendingPolls = db.getAllEntries('pendingPolls');
+        let i = 0;
+        for (poll of pendingPolls){
+            if (i == 0) {
+                i = poll.pos;
+            } else if (i > poll.pos) {
+                i = poll.pos;
+            }
+        }
+
+        const pendingPoll = db.getEntry('pendingPolls', 'pos', i);
+        if (!pendingPoll) return interaction.editReply({content:'Kein ausstehender Antrag gefunden.', flags: MessageFlags.Ephemeral});
 
         // kanal und nachricht finden
         const channel = guild.channels.cache.get(pendingPoll.channelID);
@@ -79,16 +74,12 @@ module.exports = {
         }   
 
         // welches parlament
-        let seatCollumn;
-        if (parla === 'buergerschaft') {
-            seatCollumn = 'sitzeH';
-        } else if (parla == 'hanserat') {
-            seatCollumn = 'sitze';
-        }
+        seatCollumn = 'sitze';
 
         let votesUp = 0;
         let votesDown = 0;
         let totalCountedSeats = 0;
+        let totalSeats = 100;
 
         const allParties = parteienDB.getAllParties();
         const allUsers = usersDB.getAllUsers();
@@ -106,19 +97,19 @@ module.exports = {
             if (chairVoted) { // mebers vote normal, chair gets rest of the votes
                 const memberVoters = voters.filter(u => u.userID !== chair.userID);
 
-                const seatsTaken = memberVoters.length;
+                const seatsTaken = 0; //memberVoters.length;
                 const restSeats = Math.max(seats - seatsTaken, 0);
 
-                for (const member of memberVoters) { //member votes
-                    const vote = userVotes[member.userID];
-                    if (vote === 'up') {
-                        votesUp ++;
-                        totalCountedSeats ++;
-                    } else if (vote === 'down') {
-                        votesDown ++;
-                        totalCountedSeats ++;
-                    }
-                }
+                // for (const member of memberVoters) { //member votes
+                //     const vote = userVotes[member.userID];
+                //     if (vote === 'up') {
+                //         votesUp ++;
+                //         totalCountedSeats ++;
+                //     } else if (vote === 'down') {
+                //         votesDown ++;
+                //         totalCountedSeats ++;
+                //     }
+                // }
 
                 const chairVote = userVotes[chair.userID];
                 if (chairVote == 'up') { //chair vote
@@ -129,10 +120,14 @@ module.exports = {
                     votesDown += restSeats;
                     totalCountedSeats += restSeats;
                     partyVotes[party.name] = 'dagegen';
+                } else if (chairVote == 'neutral') {
+                    totalSeats -= restSeats;
+                    totalCountedSeats += restSeats;
+                    partyVotes[party.name] = 'enthalten';
                 }
 
 
-            } else if (voters.length > 0) { //members vote normal, first one gets all the rest
+            } else if (false){ //voters.length > 0) { //members vote normal, first one gets all the rest
                 const primary = voters[0];
                 const others = voters.slice(1);
 
@@ -179,6 +174,10 @@ module.exports = {
                         votesDown += seats;
                         totalCountedSeats += seats;
                         partyVotes[party.name] = 'dagegen';
+                    } else if (delegateVote === "neutral") {
+                        totalSeats -= seats;
+                        totalCountedSeats += seats;
+                        partyVotes[party.name] = 'enthalten';
                     }
                 }
             }
@@ -186,7 +185,7 @@ module.exports = {
 
         const prozent = (isVerfassung) ? 66 : 50;
 
-        if (((votesUp / totalCountedSeats) * 100) > prozent) {
+        if (((votesUp / totalSeats) * 100) > prozent) {
             msg.react('✅');
             db.editEntry('antraege', {'id': antragID, 'accepted': 1});
         } else {
@@ -197,16 +196,15 @@ module.exports = {
 
         //PROTOKOLL
 
-        const filePath = path.join(__dirname, '..', '..', '..', 'logs', `${parla}-protokoll.txt`);
+        const filePath = path.join(__dirname, '..', '..', '..', 'logs', `protokoll.txt`);
 
         const antrag = db.getEntry('antraege', 'id', antragID);
 
         const acceptedTXT = (antrag.accepted === 1) ? 'Angenommen' : 'Abgelehnt';
         const userName = usersDB.getUser({'id': antrag.user}).name;
-        const entries = db.getAllSpez('antraege', 'parlament', [parla]);
-        const pollMenge = Array.isArray(entries) ? entries.length : 0;
+        const entries = db.getAllEntries('antraege');
 
-        let text = `\nANTRAG ${pollMenge} von ${userName}: ${antrag.content} => ${acceptedTXT}\n`;
+        let text = `\nANTRAG ${antrag.id} von ${userName}: ${antrag.content} => ${acceptedTXT}\n`;
 
         for (const party in partyVotes){
             text += `${party} => ${partyVotes[party]}\n`;

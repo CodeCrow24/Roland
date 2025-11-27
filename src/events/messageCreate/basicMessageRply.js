@@ -1,3 +1,5 @@
+const partyChat = require("../../utils/dbUtils/updatePartyChat");
+
 module.exports = (client, msg) => {
     if(msg.author.bot  || msg.channel.name != "marktplatz") return;
     
@@ -19,7 +21,15 @@ module.exports = (client, msg) => {
             msg.channel.send(`Es ist ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`)
         }
         hasSent = true
-        
+    }
+    if (msg.member.displayName == "Leo von Rahden" && msg.content.toLowerCase().includes('aktualisiere bitte den parteien kanal')){
+        partyChat(client, msg.guild);
+        if (!hasSent) {
+            msg.reply(`Wird gemacht Boss.`)
+        } else {
+            msg.channel.send(`Wird gemacht Boss.`)
+        }
+        hasSent = true
     }
     
 };
