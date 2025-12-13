@@ -36,7 +36,7 @@ module.exports = {
 
         if (content === 'err' || interaction.channel.name != 'parlaments-bot-cmd'){
             interaction.editReply({content: 'Ein Fehler ist aufgetreten.', flags: MessageFlags.Ephemeral});
-            console.log('Ein Fehler ist beim Erstellen eines Antrags aufgetreten.');
+            console.log('Ein Fehler ist beim Erstellen eines Antrags aufgetreten. (Wrong Channel)');
         }
 
         const antragID = db.addEntry('antraege', {content, user});
