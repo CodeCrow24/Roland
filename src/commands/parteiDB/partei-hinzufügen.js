@@ -148,11 +148,12 @@ module.exports = {
         const partei = parteienDB.getParty({'id': parteiID});
 
         usersDB.editUser(parteiVorsitz, 'partei', partei);
+        console.log('nye');
         usersDB.editUser(parteiVorsitz, 'vorsitz', 1);
 
         console.log(`Partei hinzugefügt: ${parteiName}`);
         interaction.reply(`Partei hinzugefügt: ${parteiName}`);
         writeCmdToLog(interaction);
-        updatePartyChat();
+        updatePartyChat(client, interaction.guild);
     }
 };

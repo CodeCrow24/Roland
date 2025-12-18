@@ -17,12 +17,10 @@ module.exports = {
 
     callback: (client, interaction) => {
         const parteiKuerzel = interaction.options.get('parteikuerzel')?.value || '404';
-
         if (interaction.channel.name !== 'bot-cmd') {
             interaction.reply({content:'Dieser Command kann hier nicht genutzt werden', flags: MessageFlags.Ephemeral});
             return;
         }
-
 
         if (parteiKuerzel === '404') {
             const parteiFields = []
@@ -39,7 +37,8 @@ module.exports = {
 
 
             interaction.reply({ embeds: [parteienEmbed]});
-            return;}
+            return;
+        }
 
         
         const partei = parteienDB.getParty({'kuerzel': parteiKuerzel});
@@ -53,6 +52,7 @@ module.exports = {
         } else {
             logo = new AttachmentBuilder(logoPath, { name: `${parteiKuerzel}_Logo.png` });
         }
+        
         const parteiEmbed = new EmbedBuilder()
             .setTitle(partei.name)
             .setThumbnail(`attachment://${parteiKuerzel}_Logo.png`)

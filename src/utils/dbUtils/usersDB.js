@@ -58,7 +58,7 @@ function getAllUsers(){
     return db.getAllEntries('users');
 }
 function editUser(id, valueName, value) {
-    db.editEntry('parteien', {id, [valueName]: value});
+    db.editEntry('users', {id, [valueName]: value});
 }
 
 module.exports = {
