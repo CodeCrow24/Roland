@@ -22,11 +22,12 @@ module.exports = {
             channel.send(msg);
         }else{
             const file = new AttachmentBuilder(anhang.url);
-            channel.send({content:msg, files: [file]})
+            channel.send({content:msg, files: [file]});
         }
 
 
-        interaction.reply({content:'Anonym gesendet.', flags: MessageFlags.Ephemeral})
+        interaction.reply({content:'Anonym gesendet.', flags: MessageFlags.Ephemeral});
         writeCmdToLog(interaction);
+        console.log(interaction);
     },
 };
