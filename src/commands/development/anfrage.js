@@ -15,7 +15,14 @@ module.exports = {
 
     callback: (client, interaction) => {
         logCommand(interaction, interaction.options);
+        notification();
         console.log(`logged request via command "${interaction.commandName}"...`);
         interaction.reply({content: 'Ihre Anfrage wurde weitergeleitet.', flags: MessageFlags.Ephemeral,});
     },
 };
+function notification() {
+    const file = path.join(__dirname, '../../../assets/notification.wav');
+    exec(
+        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
+    );
+}
