@@ -1,5 +1,7 @@
 const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
 const logCommand = require('../../utils/writeCmdToLog');
+const { exec } = require('child_process');
+const path = require('path');
 
 module.exports = {
     name: 'anfrage',
