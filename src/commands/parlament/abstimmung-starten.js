@@ -8,7 +8,7 @@ require('dotenv').config();
 
 module.exports = {
     name: 'abstimmung-starten',
-    description: 'beginnt die abstimmung',
+    description: 'Beginnt die Abstimmung.',
     // devOnly: Boolean,
     // testOnly: Boolean,
     // deleted: Boolean,

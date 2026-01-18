@@ -1,10 +1,14 @@
 const { devs, testServer} = require('../../../config.json');
 const getLocalCommands = require('../../utils/getLocalCommands');
 const writeToLog = require('../../utils/writeToLog');
+const { MessageFlags } = require('discord.js');
 
 module.exports = async (client, interaction) => {
     if (!interaction.isChatInputCommand()) return;
-    if (interaction.channel.name !== "bot-cmd" && interaction.channel.name !== "parlaments-bot-cmd"){return;}
+    if (interaction.channel.name !== "bot-cmd" && interaction.channel.name !== "parlaments-bot-cmd"){
+        interaction.reply({content:'Dies ist kein CMD Kanal und kann daher können hier keine Commands ausgeführt werden.', flags:MessageFlags.Ephemeral})
+        return;
+    }
     const localCommands = getLocalCommands();
 
     try {

@@ -65,7 +65,6 @@ module.exports = async (client) => {
             });
 
             console.log(`Registered command "${name}".`);
-            setTimeout(() => {}, 2000);
         }
         
     } catch (error) {
