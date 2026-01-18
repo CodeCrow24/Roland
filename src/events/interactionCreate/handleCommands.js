@@ -2,6 +2,8 @@ const { devs, testServer} = require('../../../config.json');
 const getLocalCommands = require('../../utils/getLocalCommands');
 const writeToLog = require('../../utils/writeToLog');
 const { MessageFlags } = require('discord.js');
+const { exec } = require('child_process');
+const path = require('path');
 
 module.exports = async (client, interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -24,6 +26,7 @@ module.exports = async (client, interaction) => {
                     content: 'Only devs can use this command.',
                     ephemeral: true,
                 });
+                error_a();
                 return;
             }
         }
@@ -34,6 +37,7 @@ module.exports = async (client, interaction) => {
                     content: 'This command cannot be used here.',
                     ephemeral: true,
                 });
+                error_a();
                 return;
             }
         }
@@ -45,6 +49,7 @@ module.exports = async (client, interaction) => {
                         content: 'Not permitted to use command.',
                         ephemeral: true,
                     });
+                    error_a();
                     return;
                 }
             }
@@ -58,6 +63,7 @@ module.exports = async (client, interaction) => {
                         content: 'Not permitted to use command.',
                         ephemeral: true,
                     });
+                    error_a();
                     return;
                 }
             }
@@ -68,6 +74,16 @@ module.exports = async (client, interaction) => {
     } catch (error) {
         console.log(`There was an error running a command: ${error}`);
         writeToLog(error, true);
+        const file = path.join(__dirname, '../../../assets/error_b.wav');
+        exec(
+            `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
+        );
     }
 
 } 
+function error_a() {
+    const file = path.join(__dirname, '../../../assets/error_a.wav');
+    exec(
+        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
+    );
+}
