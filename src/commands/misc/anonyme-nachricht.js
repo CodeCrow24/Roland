@@ -28,6 +28,6 @@ module.exports = {
 
         interaction.reply({content:'Anonym gesendet.', flags: MessageFlags.Ephemeral});
         writeCmdToLog(interaction);
-        console.log(interaction);
+        //console.log(interaction);
     },
 };

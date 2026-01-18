@@ -1,6 +1,6 @@
 {
   "name": "roland",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "description": "parlamentssoftware bremen",
   "main": "src/index.js",
   "scripts": {
@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "better-sqlite3": "^12.4.1",
-    "discord.js": "^14.22.1",
-    "dotenv": "^17.2.3"
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.2.3",
+    "play-sound": "^1.1.6",
+    "static": "^2.0.0"
   }
 }
