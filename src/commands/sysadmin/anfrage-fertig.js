@@ -19,6 +19,10 @@ module.exports = {
         const logDir = path.join(__dirname, '..', '..', '..', 'logs');
         const logFile = path.join(logDir, `anfrage-command-log.json`);
 
+        if (!fs.existsSync(logFile)) { //make sure file exists
+            fs.writeFileSync(logFile, '[]', 'utf8');
+        }
+
         const data = JSON.parse(fs.readFileSync(logFile, 'utf8'));
 
         const searchName = interaction.options.get('name')?.value || 'nothing';
