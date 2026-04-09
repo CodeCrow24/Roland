@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 module.exports = (interaction) => {
+    if (!process.env.LOGGING){return}
     const commandName = interaction.commandName
     const options = {};
     

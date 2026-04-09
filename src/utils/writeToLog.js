@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 module.exports = (logContent, err = false) => {
+    if (!process.env.LOGGING){return}
     type = err ? "error" : "input";
 
     const logEntry = {
