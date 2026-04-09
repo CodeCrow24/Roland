@@ -31,5 +31,13 @@ module.exports = (client, msg) => {
         }
         hasSent = true
     }
+    if (msg.content.toLowerCase().includes('bist du teil der revolution?')){
+        if (!hasSent) {
+            msg.reply(`Jawohl Kamerad!`)
+        } else {
+            msg.channel.send(`Jawohl Kamerad!`)
+        }
+        hasSent = true
+    }
     
 };

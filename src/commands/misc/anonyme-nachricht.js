@@ -7,13 +7,17 @@ module.exports = {
     description: 'Sended eine Nachricht ohne deine Identität zu enthüllen.',
     // devOnly: Boolean,
     // testOnly: Boolean,
-    //deleted: Boolean,
+    deleted: false,
     options: [
         {name:'nachricht', description:'Der Inhalt der Nachricht', type: ApplicationCommandOptionType.String, required: true},
         {name:'anhang', description:'Der Anhang der Nachricht (falls notwendig)', type: ApplicationCommandOptionType.Attachment, required: false},
     ],
 
     callback: (client, interaction) => {
+        if (!interaction.member.roles.cache.has(process.env.SYSADMIN_ID)){
+            interaction.reply({content:'Sie haben nicht die benötigten Berechtigungen', flags: MessageFlags.Ephemeral});
+            return;
+        }
         const msg = interaction.options.get('nachricht')?.value || '[FEHLER]';
         const anhang = interaction.options.getAttachment('anhang');
         const channel = interaction.guild.channels.cache.get(process.env.ANONCHANNEL_ID);
