@@ -15,8 +15,4 @@ module.exports = (client) => {
     //         url: 'https://www.youtube.com/watch?v=SsyiWrkUjy4',
     //     }],
     // });
-    const file = path.join(__dirname, '../../../assets/startup.wav');
-    exec(
-        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
-    );
 };

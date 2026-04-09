@@ -25,10 +25,6 @@ module.exports = async (client) => {
                 if (localCommand.deleted){
                     await applicationCommands.delete(existingCommand.id);
                     console.log(`Deleted command "${name}".`);
-                    const file = path.join(__dirname, '../../../assets/delete.wav');
-                    exec(
-                        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
-                    );
                     continue;
                 }
 
@@ -39,10 +35,6 @@ module.exports = async (client) => {
                     });
 
                     console.log(`Edited command "${name}".`);
-                    const file = path.join(__dirname, '../../../assets/hmpfhhh.wav');
-                    exec(
-                        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
-                    );
                     continue;
                 } else {
                     continue;
@@ -50,10 +42,6 @@ module.exports = async (client) => {
             } else {
                 if (localCommand.deleted) {
                     console.log(`Skipping registering command "${name}" as it's set to delete.`);
-                    const file = path.join(__dirname, '../../../assets/hmpfhhh.wav');
-                    exec(
-                        `powershell -c "(New-Object Media.SoundPlayer '${file}').PlaySync()"`
-                    );
                     continue;
                 }
             }
