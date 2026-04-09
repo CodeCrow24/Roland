@@ -16,7 +16,7 @@ module.exports = {
     ],
 
     callback: (client, interaction) => {
-        const parteiKuerzel = interaction.options.get('parteikuerzel')?.value || '404';
+        const parteiKuerzel = interaction.options.get('parteikuerzel')?.value.toUpperCase() || '404';
         if (interaction.channel.name !== 'bot-cmd') {
             interaction.reply({content:'Dieser Command kann hier nicht genutzt werden', flags: MessageFlags.Ephemeral});
             return;
@@ -27,7 +27,7 @@ module.exports = {
             const parteien = parteienDB.getAllParties();
             for (const parteiObject of parteien){parteiFields.push({
                 name: `${parteiObject.name} [${parteiObject.kuerzel}]`,
-                value:`${usersDB.getUser({'partei': parteiObject.id, 'vorsitz': 1}).name}`})}
+                value:`${usersDB.getUser({'partei': parteiObject.id, 'vorsitz': 1})?.name || 'Unbekannt'}`})}
             const parteienEmbed = new EmbedBuilder()
                 .setTitle("Bremer Parteien")
                 .setThumbnail('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGf-X8RpKfCZQbU1rLqjc2vRe_dih2oTHxXQ&s')
@@ -44,10 +44,10 @@ module.exports = {
         const partei = parteienDB.getParty({'kuerzel': parteiKuerzel});
         if (!partei) return interaction.reply({ content: 'Partei nicht gefunden', flags: MessageFlags.Ephemeral });
 
-        const logoPath = path.join(__dirname, `../../../assets/${parteiKuerzel}_Logo.png`);
+        const logoPath = path.join(__dirname, `../../../data/party_logos/${parteiKuerzel}_Logo.png`);
         let logo;
         if (!fs.existsSync(logoPath)) {
-            const defaultPath = path.join(__dirname, `../../../assets/404_Logo.png`);
+            const defaultPath = path.join(__dirname, `../../../data/party_logos/404_Logo.png`);
             logo = new AttachmentBuilder(defaultPath, { name: `${parteiKuerzel}_Logo.png` });
         } else {
             logo = new AttachmentBuilder(logoPath, { name: `${parteiKuerzel}_Logo.png` });
